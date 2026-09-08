@@ -1,0 +1,67 @@
+{
+  "name": "AgroEye - Irrigation Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agroeye/irrigation-alert",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook: Irrigation Alert",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [260, 300],
+      "webhookId": "agroeye-irrigation-alert"
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => {\n  const low = item.json.estimated_requirement_litres.low;\n  const high = item.json.estimated_requirement_litres.high;\n  item.json.message = `Soil moisture is ${item.json.water_status}. Estimated irrigation needed: ${low}-${high} litres.`;\n  return item;\n});"
+      },
+      "name": "Format Message",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "text": "=🚰 Irrigation Alert for farm {{$json[\"farm_id\"]}}: {{$json[\"message\"]}}"
+      },
+      "name": "Send SMS/WhatsApp (Twilio)",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env[\"AGROEYE_API_BASE_URL\"]}}/api/webhooks/n8n/notify",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AgroEye-Signature", "value": "={{$env[\"AGROEYE_WEBHOOK_SECRET\"]}}" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "title", "value": "Irrigation Alert" },
+            { "name": "message", "value": "={{$json[\"message\"]}}" },
+            { "name": "type", "value": "alert" }
+          ]
+        }
+      },
+      "name": "Record Notification in AgroEye",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [960, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Irrigation Alert": { "main": [[{ "node": "Format Message", "type": "main", "index": 0 }]] },
+    "Format Message": { "main": [[{ "node": "Send SMS/WhatsApp (Twilio)", "type": "main", "index": 0 }]] },
+    "Send SMS/WhatsApp (Twilio)": { "main": [[{ "node": "Record Notification in AgroEye", "type": "main", "index": 0 }]] }
+  }
+}

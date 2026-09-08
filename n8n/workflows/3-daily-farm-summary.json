@@ -1,0 +1,60 @@
+{
+  "name": "AgroEye - Daily Farm Summary",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "0 7 * * *" }]
+        }
+      },
+      "name": "Schedule Trigger (7 AM Daily)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env[\"AGROEYE_API_BASE_URL\"]}}/api/webhooks/n8n/daily-summary",
+        "method": "GET",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AgroEye-Signature", "value": "={{$env[\"AGROEYE_WEBHOOK_SECRET\"]}}" }
+          ]
+        }
+      },
+      "name": "Fetch Farm Summary from AgroEye",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "name": "Split Farms",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "digest@agroeye.app",
+        "toEmail": "={{$json[\"owner_email\"]}}",
+        "subject": "🌾 Your Daily AgroEye Farm Summary — {{$json[\"farm_name\"]}}",
+        "text": "=Good morning!\n\nHere's today's snapshot for {{$json[\"farm_name\"]}}:\n- Current crop: {{$json[\"current_crop\"]}}\n- Soil moisture: {{$json[\"soil_moisture\"]}}%\n- Soil pH: {{$json[\"soil_ph\"]}}\n\nLog in to AgroEye for full AI insights.",
+        "options": {}
+      },
+      "name": "Send Daily Summary Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [920, 300]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger (7 AM Daily)": { "main": [[{ "node": "Fetch Farm Summary from AgroEye", "type": "main", "index": 0 }]] },
+    "Fetch Farm Summary from AgroEye": { "main": [[{ "node": "Split Farms", "type": "main", "index": 0 }]] },
+    "Split Farms": { "main": [[{ "node": "Send Daily Summary Email", "type": "main", "index": 0 }]] }
+  }
+}

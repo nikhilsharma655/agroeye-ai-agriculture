@@ -1,0 +1,55 @@
+{
+  "name": "AgroEye - New Recommendation Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agroeye/recommendation",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook: Recommendation Created",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [260, 300],
+      "webhookId": "agroeye-recommendation"
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => {\n  item.json.summaryText = `New ${item.json.category} recommendation for farm ${item.json.farm_id}: ${item.json.summary}`;\n  return item;\n});"
+      },
+      "name": "Build Notification Text",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env[\"AGROEYE_API_BASE_URL\"]}}/api/webhooks/n8n/notify",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AgroEye-Signature", "value": "={{$env[\"AGROEYE_WEBHOOK_SECRET\"]}}" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "title", "value": "New AI Recommendation" },
+            { "name": "message", "value": "={{$json[\"summaryText\"]}}" },
+            { "name": "type", "value": "recommendation" }
+          ]
+        }
+      },
+      "name": "Push Notification to AgroEye",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [720, 300]
+    }
+  ],
+  "connections": {
+    "Webhook: Recommendation Created": { "main": [[{ "node": "Build Notification Text", "type": "main", "index": 0 }]] },
+    "Build Notification Text": { "main": [[{ "node": "Push Notification to AgroEye", "type": "main", "index": 0 }]] }
+  }
+}

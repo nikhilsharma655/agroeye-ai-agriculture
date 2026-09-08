@@ -1,0 +1,66 @@
+{
+  "best_model": "gradient_boosting",
+  "feature_columns": [
+    "area_hectare",
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall",
+    "crop_banana",
+    "crop_chickpea",
+    "crop_coconut",
+    "crop_coffee",
+    "crop_cotton",
+    "crop_grapes",
+    "crop_kidneybeans",
+    "crop_lentil",
+    "crop_maize",
+    "crop_mango",
+    "crop_orange",
+    "crop_rice",
+    "crop_sugarcane",
+    "crop_watermelon",
+    "crop_wheat"
+  ],
+  "crops": [
+    "banana",
+    "chickpea",
+    "coconut",
+    "coffee",
+    "cotton",
+    "grapes",
+    "kidneybeans",
+    "lentil",
+    "maize",
+    "mango",
+    "orange",
+    "rice",
+    "sugarcane",
+    "watermelon",
+    "wheat"
+  ],
+  "metrics": {
+    "random_forest": {
+      "mae": 0.7683863796296292,
+      "mse": 3.1185754439010713,
+      "rmse": 1.7659488791867877,
+      "r2": 0.9881555043934116
+    },
+    "gradient_boosting": {
+      "mae": 0.8114012939265781,
+      "mse": 2.6454996893821336,
+      "rmse": 1.6264992128439946,
+      "r2": 0.9899522682674238
+    },
+    "linear_regression": {
+      "mae": 0.7797536363263412,
+      "mse": 3.4442399651922617,
+      "rmse": 1.855866365122301,
+      "r2": 0.9869186152877788
+    }
+  },
+  "residual_std": 1.6250539266459372
+}

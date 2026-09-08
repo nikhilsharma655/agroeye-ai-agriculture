@@ -1,0 +1,75 @@
+{
+  "name": "AgroEye - Farm Disease Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agroeye/farm-alert",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook: Farm Alert",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [260, 300],
+      "webhookId": "agroeye-farm-alert"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"severity\"]}}",
+              "value2": "high"
+            }
+          ]
+        }
+      },
+      "name": "IF High Severity",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "alerts@agroeye.app",
+        "toEmail": "={{$json[\"farmer_email\"]}}",
+        "subject": "⚠️ High Disease Risk Detected on {{$json[\"farm_id\"]}}",
+        "text": "=AgroEye detected a HIGH disease risk alert:\n\nAlert type: {{$json[\"alert_type\"]}}\nMessage: {{$json[\"message\"]}}\n\nPlease inspect your field as soon as possible.",
+        "options": {}
+      },
+      "name": "Send Email Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [720, 220]
+    },
+    {
+      "parameters": {
+        "url": "={{$env[\"AGROEYE_API_BASE_URL\"]}}/api/webhooks/n8n/farm-alert",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-AgroEye-Signature", "value": "={{$env[\"AGROEYE_WEBHOOK_SECRET\"]}}" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "farm_id", "value": "={{$json[\"farm_id\"]}}" },
+            { "name": "status", "value": "notified" }
+          ]
+        }
+      },
+      "name": "Ack Back to AgroEye",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [960, 220]
+    }
+  ],
+  "connections": {
+    "Webhook: Farm Alert": { "main": [[{ "node": "IF High Severity", "type": "main", "index": 0 }]] },
+    "IF High Severity": { "main": [[{ "node": "Send Email Notification", "type": "main", "index": 0 }], []] },
+    "Send Email Notification": { "main": [[{ "node": "Ack Back to AgroEye", "type": "main", "index": 0 }]] }
+  }
+}

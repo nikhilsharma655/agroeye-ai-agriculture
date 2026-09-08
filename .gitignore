@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+venv/
+*.egg-info/
+
+# Environment
+.env
+!.env.example
+
+# Database
+*.db
+*.sqlite3
+
+# Node / frontend
+node_modules/
+dist/
+.vite/
+
+# ML (regenerate via `python ml/training/train_models.py`)
+# Kept tracked in this delivery zip for convenience, but in a real git repo
+# you'd typically regenerate these rather than commit large binaries:
+# ml/saved_models/*.pkl
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

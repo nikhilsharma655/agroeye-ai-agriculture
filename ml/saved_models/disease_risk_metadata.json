@@ -1,0 +1,65 @@
+{
+  "best_model": "gradient_boosting",
+  "feature_columns": [
+    "temperature",
+    "humidity",
+    "rainfall",
+    "soil_moisture",
+    "previous_disease_history",
+    "stage_seedling",
+    "stage_vegetative",
+    "stage_flowering",
+    "stage_maturity",
+    "crop_rice",
+    "crop_maize",
+    "crop_chickpea",
+    "crop_kidneybeans",
+    "crop_wheat",
+    "crop_cotton",
+    "crop_sugarcane",
+    "crop_banana",
+    "crop_coffee",
+    "crop_mango",
+    "crop_grapes",
+    "crop_watermelon",
+    "crop_lentil",
+    "crop_orange",
+    "crop_coconut"
+  ],
+  "classes": [
+    "high",
+    "low",
+    "medium"
+  ],
+  "metrics": {
+    "random_forest": {
+      "accuracy": 0.7840909090909091,
+      "precision": 0.8000780118899299,
+      "recall": 0.7840909090909091,
+      "f1_score": 0.7757567984623688
+    },
+    "gradient_boosting": {
+      "accuracy": 0.7977272727272727,
+      "precision": 0.8042578944200882,
+      "recall": 0.7977272727272727,
+      "f1_score": 0.7926164397471217
+    }
+  },
+  "confusion_matrix": [
+    [
+      131,
+      0,
+      43
+    ],
+    [
+      0,
+      17,
+      23
+    ],
+    [
+      15,
+      8,
+      203
+    ]
+  ]
+}
