@@ -1,4 +1,4 @@
-# 🌾 AgroEye — AI-Powered Smart Agriculture Platform
+# g AgroEye — AI-Powered Smart Agriculture Platform
 
 AgroEye is a full-stack digital agricultural assistant. Farmers enter data
 about their farm, soil, and environment, and AgroEye uses real trained
